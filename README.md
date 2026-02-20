@@ -37,6 +37,9 @@ python3 timer.py status
 # Stop the timer with an optional note
 python3 timer.py stop --note "Friendbot was tricky, needed 2 fixes"
 
+# Add or update the note on the last completed session
+python3 timer.py note "forgot to add this when I stopped"
+
 # View all completed sessions
 python3 timer.py summary
 
