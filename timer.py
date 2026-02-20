@@ -6,6 +6,7 @@ Usage:
   python timer.py start "milestone name" --project "project name"
   python timer.py stop --note "optional note"
   python timer.py status
+  python timer.py note "add a note to the last session"
   python timer.py summary
   python timer.py summary --project "project name"
 """
@@ -144,6 +145,27 @@ def cmd_status(args):
     print(f"  Elapsed  : {format_duration(elapsed)}")
 
 
+def cmd_note(args):
+    """
+    Add or replace the note on the most recently completed session.
+    Useful if you forgot to add a note when stopping.
+    """
+    data = load_data()
+
+    if not data["sessions"]:
+        print("No completed sessions to add a note to.")
+        sys.exit(1)
+
+    # The last session in the list is the most recent
+    last = data["sessions"][-1]
+    last["note"] = args.note
+    save_data(data)
+
+    print(f"Note added to last session.")
+    print(f"  Milestone: {last['milestone']}")
+    print(f"  Note     : {last['note']}")
+
+
 def cmd_summary(args):
     """
     Print a table of all completed sessions, grouped by project.
@@ -219,6 +241,10 @@ def build_parser():
     # timer status
     subparsers.add_parser("status", help="Show the current timer status")
 
+    # timer note "..."
+    p_note = subparsers.add_parser("note", help="Add a note to the last completed session")
+    p_note.add_argument("note", help="The note to attach")
+
     # timer summary [--project "..."]
     p_summary = subparsers.add_parser("summary", help="Show all completed sessions")
     p_summary.add_argument("--project", default="", help="Filter by project name")
@@ -238,6 +264,8 @@ def main():
         cmd_stop(args)
     elif args.command == "status":
         cmd_status(args)
+    elif args.command == "note":
+        cmd_note(args)
     elif args.command == "summary":
         cmd_summary(args)
 
